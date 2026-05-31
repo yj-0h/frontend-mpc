@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>67Frauders — Vigilance System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-page:      #0d0f1a;
+      --bg-surface:   #141625;
+      --bg-card:      #1a1d30;
+      --bg-hover:     #21253a;
+      --border:       rgba(255,255,255,0.07);
+      --border-mid:   rgba(255,255,255,0.13);
+      --accent:       #7c9efc;
+      --accent-dim:   rgba(124,158,252,0.12);
+      --accent-glow:  rgba(124,158,252,0.25);
+      --text-1:       #e8eaf6;
+      --text-2:       #8890b0;
+      --text-3:       #4a5070;
+      --red:          #e24b4a;
+      --red-dim:      rgba(226,75,74,0.15);
+      --amber:        #f0a030;
+      --amber-dim:    rgba(240,160,48,0.15);
+      --green:        #3ec97e;
+      --green-dim:    rgba(62,201,126,0.15);
+      --blue:         #5aa8f8;
+      --blue-dim:     rgba(90,168,248,0.15);
+      --radius-sm:    6px;
+      --radius-md:    10px;
+      --radius-lg:    14px;
+      --font-display: 'Syne', sans-serif;
+      --font-mono:    'IBM Plex Mono', monospace;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg-page);
+      color: var(--text-1);
+      font-family: var(--font-display);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── LAYOUT ── */
+    .app { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 200px;
+      min-width: 200px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+    .sidebar-logo {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo .brand {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--text-1);
+    }
+    .sidebar-logo .brand span { color: var(--accent); }
+    .sidebar-logo .sub {
+      font-size: 10px;
+      color: var(--text-3);
+      margin-top: 2px;
+      font-family: var(--font-mono);
+      letter-spacing: .5px;
+    }
+    .sidebar-nav { flex: 1; padding: 14px 10px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: var(--radius-md);
+      color: var(--text-2);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .15s;
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+    .nav-item:hover { color: var(--text-1); background: var(--bg-hover); }
+    .nav-item.active {
+      color: var(--accent);
+      background: var(--accent-dim);
+      border-color: rgba(124,158,252,0.2);
+    }
+    .nav-item i { font-size: 17px; }
+    .sidebar-footer { padding: 12px 10px 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px; }
+    .new-inv-btn {
+      margin: 0 10px 14px;
+      padding: 11px;
+      background: var(--accent);
+      color: #0d0f1a;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s;
+    }
+    .new-inv-btn:hover { opacity: .88; transform: translateY(-1px); }
+
+    /* ── MAIN ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .search {
+      flex: 1;
+      padding: 8px 14px 8px 36px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-md);
+      color: var(--text-1);
+      font-family: var(--font-display);
+      font-size: 13px;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .search:focus { border-color: var(--accent); }
+    .search::placeholder { color: var(--text-3); }
+    .search-wrap { position: relative; flex: 1; }
+    .search-wrap i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 16px; pointer-events: none; }
+    .topbar-icons { display: flex; align-items: center; gap: 14px; color: var(--text-2); }
+    .topbar-icons i { font-size: 18px; cursor: pointer; transition: color .15s; }
+    .topbar-icons i:hover { color: var(--text-1); }
+    .user-chip { display: flex; align-items: center; gap: 9px; }
+    .user-chip span { font-size: 13px; color: var(--text-2); }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--accent-dim);
+      border: 1.5px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; color: var(--accent);
+    }
+
+    /* ── CONTENT ── */
+    .content { flex: 1; overflow-y: auto; padding: 24px; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .page-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; color: var(--text-1); }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+    }
+
+    /* ── DASHBOARD GRID ── */
+    .dash-top { display: grid; grid-template-columns: 240px 1fr; gap: 16px; margin-bottom: 16px; }
+    .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* RISK GAUGE */
+    .risk-card { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .risk-label { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); letter-spacing: .5px; text-transform: uppercase; margin-bottom: 14px; }
+    .gauge-wrap { position: relative; width: 150px; height: 86px; margin-bottom: 10px; }
+    .risk-badge {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid rgba(124,158,252,0.25);
+      font-size: 11px;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      margin-bottom: 14px;
+    }
+    .risk-meta { display: flex; gap: 24px; }
+    .risk-meta-item label { font-size: 10px; color: var(--text-3); display: block; margin-bottom: 3px; text-transform: uppercase; font-family: var(--font-mono); letter-spacing: .4px; }
+    .risk-meta-item .val { font-size: 13px; font-weight: 600; }
+    .trend-up { color: var(--red); }
+
+    /* PATTERN CARDS */
+    .pattern-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .pattern-card:hover { border-color: var(--border-mid); background: var(--bg-hover); }
+    .pattern-label { font-size: 9px; color: var(--text-3); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .7px; margin-bottom: 4px; }
+    .pattern-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+    .pattern-desc { font-size: 11px; color: var(--text-2); margin-bottom: 10px; line-height: 1.5; }
+    .bar-track { height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 6px; }
+    .bar-fill { height: 3px; border-radius: 2px; transition: width .4s ease; }
+    .resolve-count { font-size: 10px; color: var(--text-3); font-family: var(--font-mono); }
+
+    /* ── TABLE ── */
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .section-title { font-size: 15px; font-weight: 600; }
+    .section-sub { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); margin-top: 2px; }
+    .btn-outline {
+      padding: 6px 14px;
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-size: 12px;
+      background: transparent;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-outline:hover { color: var(--text-1); border-color: rgba(255,255,255,.25); }
+    .btn-primary {
+      padding: 6px 14px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--accent);
+      color: #0d0f1a;
+      cursor: pointer;
+      transition: opacity .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-primary:hover { opacity: .85; }
+    .btns { display: flex; gap: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-3);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--text-1); }
+    tbody tr:hover { background: rgba(255,255,255,.02); }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* BADGES */
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      letter-spacing: .3px;
+    }
+    .badge-red    { background: var(--red-dim);   color: var(--red);   border: 1px solid rgba(226,75,74,.3); }
+    .badge-blue   { background: var(--blue-dim);  color: var(--blue);  border: 1px solid rgba(90,168,248,.3); }
+    .badge-green  { background: var(--green-dim); color: var(--green); border: 1px solid rgba(62,201,126,.3); }
+    .badge-amber  { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(240,160,48,.3); }
+    .badge-accent { background: var(--accent-dim);color: var(--accent);border: 1px solid rgba(124,158,252,.3); }
+
+    /* SCORE BAR */
+    .score-bar { display: flex; align-items: center; gap: 8px; }
+    .score-track { width: 56px; height: 3px; background: rgba(255,255,255,.06); border-radius: 2px; }
+    .score-fill { height: 3px; border-radius: 2px; }
+    .score-num { font-size: 12px; font-family: var(--font-mono); color: var(--text-2); }
+
+    .action-btn {
+      padding: 4px 11px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      border: 1px solid var(--border-mid);
+      background: transparent;
+      cursor: pointer;
+      color: var(--text-2);
+      font-family: var(--font-display);
+      transition: all .15s;
+    }
+    .action-btn:hover { color: var(--accent); border-color: rgba(124,158,252,.4); }
+
+    /* PAGINATION */
+    .table-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
+    .table-count { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); }
+    .pagination { display: flex; gap: 4px; }
+    .page-btn {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-mid);
+      background: transparent;
+      color: var(--text-2);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s;
+    }
+    .page-btn.active { background: var(--accent-dim); color: var(--accent); border-color: rgba(124,158,252,.3); }
+    .page-btn:hover:not(.active) { color: var(--text-1); border-color: var(--border-mid); }
+
+    /* ── REVIEW PAGE ── */
+    .review-wrap { max-width: 700px; }
+    .progress-section { margin-bottom: 20px; }
+    .progress-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .progress-label { font-size: 12px; color: var(--text-2); font-family: var(--font-mono); }
+    .progress-bar { height: 4px; background: rgba(255,255,255,.07); border-radius: 2px; }
+    .progress-fill { height: 4px; border-radius: 2px; background: var(--accent); transition: width .4s ease; }
+
+    .review-card { margin-bottom: 14px; }
+    .review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+    .review-id { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); margin-bottom: 6px; }
+    .review-amount { font-size: 30px; font-weight: 600; letter-spacing: -.5px; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+    .detail-item label { font-size: 10px; color: var(--text-3); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 4px; }
+    .detail-item span { font-size: 14px; font-weight: 500; }
+
+    .fraud-reason {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .fraud-reason h4 { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+    .fraud-reason p { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+
+    .action-row { display: flex; gap: 10px; margin-bottom: 16px; }
+    .action-opt {
+      flex: 1;
+      padding: 11px;
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-md);
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 500;
+      background: transparent;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all .15s;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .action-opt:hover { color: var(--text-1); border-color: var(--border-mid); background: var(--bg-hover); }
+    .action-opt.selected-approve { background: var(--green-dim); border-color: rgba(62,201,126,.4); color: var(--green); }
+    .action-opt.selected-reject  { background: var(--red-dim);   border-color: rgba(226,75,74,.4);  color: var(--red); }
+    .action-opt.selected-escalate{ background: var(--amber-dim); border-color: rgba(240,160,48,.4); color: var(--amber); }
+
+    .msg-label { font-size: 10px; color: var(--text-3); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 8px; }
+    .msg-box {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-md);
+      color: var(--text-1);
+      font-family: var(--font-display);
+      font-size: 13px;
+      min-height: 90px;
+      resize: vertical;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .msg-box:focus { border-color: var(--accent); }
+    .msg-box::placeholder { color: var(--text-3); }
+
+    .review-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
+    .nav-arrow {
+      display: flex; align-items: center; gap: 7px;
+      padding: 9px 18px;
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-md);
+      font-family: var(--font-display);
+      font-size: 13px;
+      background: transparent;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .nav-arrow:hover { color: var(--text-1); border-color: rgba(255,255,255,.25); }
+    .nav-arrow:disabled { opacity: .3; cursor: default; pointer-events: none; }
+
+    /* ── UPLOAD PAGE ── */
+    .upload-prev-btn { margin-bottom: 18px; }
+    .drop-zone {
+      border: 1.5px dashed var(--border-mid);
+      border-radius: var(--radius-lg);
+      padding: 60px 20px;
+      text-align: center;
+      background: rgba(255,255,255,.02);
+      transition: border-color .2s, background .2s;
+      cursor: pointer;
+    }
+    .drop-zone:hover { border-color: var(--accent); background: var(--accent-dim); }
+    .drop-zone i { font-size: 44px; color: var(--text-3); margin-bottom: 14px; display: block; }
+    .drop-zone-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .drop-zone-sub { font-size: 13px; color: var(--text-2); }
+    .drop-zone-sub span { color: var(--accent); cursor: pointer; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      color: var(--text-1);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .25s, transform .25s;
+      pointer-events: none;
+      z-index: 999;
+      max-width: 320px;
+      font-family: var(--font-mono);
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand"><span>67</span>FRAUDERS</div>
+      <div class="sub">Vigilance System</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="goPage('dashboard')" id="nav-dashboard">
+        <i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard
+      </a>
+      <a class="nav-item" onclick="goPage('cases')" id="nav-cases">
+        <i class="ti ti-clipboard-list" aria-hidden="true"></i> Cases
+      </a>
+      <a class="nav-item" onclick="goPage('upload')" id="nav-upload">
+        <i class="ti ti-file-upload" aria-hidden="true"></i> Upload
+      </a>
+    </nav>
+    <button class="new-inv-btn" onclick="goPage('action')">+ New Investigation</button>
+    <div class="sidebar-footer">
+      <a class="nav-item"><i class="ti ti-settings" aria-hidden="true"></i> Settings</a>
+      <a class="nav-item"><i class="ti ti-help" aria-hidden="true"></i> Support</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="search-wrap">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <input class="search" placeholder="Search accounts, transactions, or card IDs…" />
+      </div>
+      <div class="topbar-icons">
+        <i class="ti ti-bell" aria-hidden="true"></i>
+        <i class="ti ti-history" aria-hidden="true"></i>
+        <i class="ti ti-help-circle" aria-hidden="true"></i>
+      </div>
+      <div class="user-chip">
+        <span>Alex Rivera</span>
+        <div class="avatar">AR</div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- ══ DASHBOARD ══ -->
+      <div class="page active" id="page-dashboard">
+        <div class="dash-top">
+
+          <!-- Risk gauge card -->
+          <div class="card risk-card">
+            <div class="risk-label">Global System Sentiment</div>
+            <div class="gauge-wrap">
+              <svg viewBox="0 0 150 86" width="150" height="86">
+                <path d="M 12 76 A 63 63 0 0 1 138 76" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="14" stroke-linecap="round"/>
+                <path d="M 12 76 A 63 63 0 0 1 138 76" fill="none" stroke="#7c9efc" stroke-width="14" stroke-linecap="round"
+                  stroke-dasharray="197.9" stroke-dashoffset="70" opacity=".9"/>
+                <text x="75" y="65" text-anchor="middle" font-size="24" font-weight="600" fill="#e8eaf6" font-family="Syne,sans-serif">64</text>
+                <text x="75" y="78" text-anchor="middle" font-size="10" fill="#4a5070" font-family="IBM Plex Mono,monospace">/100</text>
+              </svg>
+            </div>
+            <div class="risk-badge">Elevated Vigilance</div>
+            <div class="risk-meta">
+              <div class="risk-meta-item">
+                <label>Last 24h Trend</label>
+                <div class="val trend-up">+12.4% Increase</div>
+              </div>
+              <div class="risk-meta-item">
+                <label>Active Alerts</label>
+                <div class="val">1,402 Units</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pattern cards -->
+          <div class="pattern-grid">
+            <div class="pattern-card" onclick="openReview(0)">
+              <div class="pattern-label">Pattern A</div>
+              <div class="pattern-name">Velocity Spike</div>
+              <div class="pattern-desc">Transactions exceeding 5 units/min per IP.</div>
+              <div class="bar-track"><div class="bar-fill" style="width:85%;background:var(--red)"></div></div>
+              <div class="resolve-count">312 to resolve</div>
+            </div>
+            <div class="pattern-card" onclick="openReview(3)">
+              <div class="pattern-label">Pattern B</div>
+              <div class="pattern-name">BIN Mismatch</div>
+              <div class="pattern-desc">Card origin differs from transaction IP.</div>
+              <div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--blue)"></div></div>
+              <div class="resolve-count">189 to resolve</div>
+            </div>
+            <div class="pattern-card" onclick="openReview(1)">
+              <div class="pattern-label">Pattern C</div>
+              <div class="pattern-name">Micro-auth Test</div>
+              <div class="pattern-desc">Low-value attempts on new accounts.</div>
+              <div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--green)"></div></div>
+              <div class="resolve-count">64 to resolve</div>
+            </div>
+            <div class="pattern-card" onclick="openReview(2)">
+              <div class="pattern-label">Pattern D</div>
+              <div class="pattern-name">Geo-Hopping</div>
+              <div class="pattern-desc">Impossible travel between transactions.</div>
+              <div class="bar-track"><div class="bar-fill" style="width:18%;background:var(--amber)"></div></div>
+              <div class="resolve-count">45 to resolve</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action queue table -->
+        <div class="card">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Action Queue</div>
+              <div class="section-sub">High-priority transaction review</div>
+            </div>
+            <div class="btns">
+              <button class="btn-outline"><i class="ti ti-filter" aria-hidden="true"></i> Filter</button>
+              <button class="btn-primary"><i class="ti ti-download" aria-hidden="true"></i> Export CSV</button>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Card ID</th>
+                <th>Amount</th>
+                <th>Pattern</th>
+                <th>Risk score</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="queue-body"></tbody>
+          </table>
+          <div class="table-footer">
+            <span class="table-count">Showing 4 of 282 flagged transactions</span>
+            <div class="pagination">
+              <button class="page-btn">‹</button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ CASES ══ -->
+      <div class="page" id="page-cases">
+        <div class="page-title">Cases</div>
+        <div class="card">
+          <table>
+            <thead>
+              <tr><th>Case ID</th><th>Card</th><th>Pattern</th><th>Status</th><th>Analyst</th><th>Updated</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-family:var(--font-mono);font-size:12px">#C-8821</td>
+                <td style="font-family:var(--font-mono);font-size:12px">**** 9842</td>
+                <td><span class="badge badge-red">Velocity Spike</span></td>
+                <td><span class="badge badge-amber">Escalated</span></td>
+                <td>A. Rivera</td>
+                <td style="color:var(--text-2);font-size:12px">Today 14:22</td>
+              </tr>
+              <tr>
+                <td style="font-family:var(--font-mono);font-size:12px">#C-8820</td>
+                <td style="font-family:var(--font-mono);font-size:12px">**** 5118</td>
+                <td><span class="badge badge-blue">Micro-auth</span></td>
+                <td><span class="badge badge-green">Approved</span></td>
+                <td>A. Rivera</td>
+                <td style="color:var(--text-2);font-size:12px">Today 14:21</td>
+              </tr>
+              <tr>
+                <td style="font-family:var(--font-mono);font-size:12px">#C-8819</td>
+                <td style="font-family:var(--font-mono);font-size:12px">**** 2287</td>
+                <td><span class="badge badge-amber">Geo-Hopping</span></td>
+                <td><span class="badge badge-red">Rejected</span></td>
+                <td>A. Rivera</td>
+                <td style="color:var(--text-2);font-size:12px">Today 14:20</td>
+              </tr>
+              <tr>
+                <td style="font-family:var(--font-mono);font-size:12px">#C-8818</td>
+                <td style="font-family:var(--font-mono);font-size:12px">**** 8841</td>
+                <td><span class="badge badge-red">BIN Mismatch</span></td>
+                <td><span class="badge badge-accent">In Review</span></td>
+                <td>A. Rivera</td>
+                <td style="color:var(--text-2);font-size:12px">Today 14:19</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ UPLOAD ══ -->
+      <div class="page" id="page-upload">
+        <div class="page-title">Document Analysis</div>
+        <div style="margin-bottom:14px">
+          <button class="btn-outline upload-prev-btn" onclick="goPage('cases')">
+            <i class="ti ti-file-text" aria-hidden="true"></i> View previous transaction document
+          </button>
+        </div>
+        <div class="card">
+          <div class="drop-zone" onclick="document.getElementById('file-input').click()">
+            <i class="ti ti-cloud-upload" aria-hidden="true"></i>
+            <div class="drop-zone-title">+ New Document Analysis</div>
+            <div class="drop-zone-sub">Drop file here or <span>browse files</span></div>
+            <input type="file" id="file-input" style="display:none" accept=".pdf,.csv,.xlsx" onchange="handleFileUpload(this)" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ ACTION REVIEW ══ -->
+      <div class="page" id="page-action">
+        <div class="page-title">Transaction Review</div>
+        <div class="review-wrap">
+
+          <div class="progress-section">
+            <div class="progress-meta">
+              <span class="progress-label" id="prog-label">Transaction 1 of 4</span>
+              <span class="progress-label" id="prog-pct">25%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="prog-fill" style="width:25%"></div>
+            </div>
+          </div>
+
+          <div class="card review-card">
+            <div class="review-header">
+              <div>
+                <div class="review-id" id="rev-id">Case #C-8821 · **** 9842</div>
+                <div class="review-amount" id="rev-amount">$1,492.00</div>
+              </div>
+              <span class="badge" id="rev-badge">Velocity Spike</span>
+            </div>
+
+            <div class="detail-grid">
+              <div class="detail-item"><label>Timestamp</label><span id="rev-ts">14:22:05.12</span></div>
+              <div class="detail-item"><label>Risk score</label><span id="rev-score">92 / 100</span></div>
+              <div class="detail-item"><label>Merchant</label><span id="rev-merchant">TechGadgets EU</span></div>
+              <div class="detail-item"><label>Location</label><span id="rev-loc">Frankfurt, DE</span></div>
+            </div>
+
+            <div class="fraud-reason">
+              <h4>Reason of fraud pattern</h4>
+              <p id="rev-reason">Loading…</p>
+            </div>
+
+            <div class="action-row">
+              <button class="action-opt" id="btn-approve" onclick="selectAction('approve')">
+                <i class="ti ti-check" aria-hidden="true"></i> Approve
+              </button>
+              <button class="action-opt" id="btn-reject" onclick="selectAction('reject')">
+                <i class="ti ti-x" aria-hidden="true"></i> Reject
+              </button>
+              <button class="action-opt" id="btn-escalate" onclick="selectAction('escalate')">
+                <i class="ti ti-alert-triangle" aria-hidden="true"></i> Escalate
+              </button>
+            </div>
+
+            <label class="msg-label">Message / Notes</label>
+            <textarea class="msg-box" id="rev-msg" placeholder="Add investigation notes…"></textarea>
+          </div>
+
+          <div class="review-nav">
+            <button class="nav-arrow" id="btn-undo" onclick="prevTx()">
+              <i class="ti ti-arrow-left" aria-hidden="true"></i> Undo
+            </button>
+            <button class="btn-primary" onclick="submitAndNext()" style="padding:10px 22px;font-size:13px">
+              Submit &amp; Next <i class="ti ti-arrow-right" aria-hidden="true"></i>
+            </button>
+            <button class="nav-arrow" id="btn-skip" onclick="nextTx()">
+              Skip <i class="ti ti-arrow-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ── DATA ── */
+  const txData = [
+    {
+      id: '#C-8821', card: '**** 9842', amount: '$1,492.00',
+      pattern: 'Velocity Spike', badgeClass: 'badge-red',
+      ts: '14:22:05.12', score: '92 / 100',
+      merchant: 'TechGadgets EU', loc: 'Frankfurt, DE',
+      reason: 'This card triggered 12 transactions within 90 seconds across 3 different IP addresses. The velocity exceeds the 5 tx/min threshold by 4×. Previous legitimate usage shows avg 1 tx/day. High probability of card testing or automated fraud.'
+    },
+    {
+      id: '#C-8820', card: '**** 5118', amount: '$24.99',
+      pattern: 'Micro-auth', badgeClass: 'badge-blue',
+      ts: '14:21:44.88', score: '64 / 100',
+      merchant: 'DigitalSubs Inc', loc: 'London, UK',
+      reason: 'Low-value micro-authorization attempt on a newly issued account. No prior transaction history. Pattern matches card verification probing seen in 67% of compromised card cases this quarter.'
+    },
+    {
+      id: '#C-8819', card: '**** 2287', amount: '$820.00',
+      pattern: 'Geo-Hopping', badgeClass: 'badge-amber',
+      ts: '14:20:12.55', score: '88 / 100',
+      merchant: 'LuxeStore Paris', loc: 'Paris, FR',
+      reason: 'Transaction originated 9,200 km from the previous transaction completed 18 minutes earlier. Physical travel is impossible in this timeframe. Card was last used in São Paulo, BR. Strong indicator of card cloning or credential theft.'
+    },
+    {
+      id: '#C-8818', card: '**** 8841', amount: '$3,120.45',
+      pattern: 'BIN Mismatch', badgeClass: 'badge-red',
+      ts: '14:19:59.32', score: '95 / 100',
+      merchant: 'CryptoExchange Pro', loc: 'Dubai, UAE',
+      reason: 'Card BIN prefix indicates issuance in Canada, but transaction IP resolves to a data center in Eastern Europe. High-value purchase on a crypto exchange. BIN mismatch combined with VPN/proxy usage is a strong fraud signal.'
+    }
+  ];
+
+  let curIdx = 0;
+  let selectedAction = null;
+
+  /* ── NAVIGATION ── */
+  function goPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+    const pageMap = {
+      dashboard: 'page-dashboard',
+      cases:     'page-cases',
+      upload:    'page-upload',
+      action:    'page-action'
+    };
+    const pg = document.getElementById(pageMap[name]);
+    if (pg) pg.classList.add('active');
+
+    const nav = document.getElementById('nav-' + name);
+    if (nav) nav.classList.add('active');
+
+    if (name === 'action') {
+      curIdx = 0;
+      selectedAction = null;
+      renderReview();
+    }
+  }
+
+  /* ── QUEUE TABLE ── */
+  function renderQueue() {
+    const tbody = document.getElementById('queue-body');
+    tbody.innerHTML = txData.map((t, i) => {
+      const scoreNum = parseInt(t.score);
+      const barWidth = Math.round((scoreNum / 100) * 56);
+      const barColor = scoreNum > 85 ? 'var(--red)' : scoreNum > 70 ? 'var(--amber)' : 'var(--blue)';
+      return `
+        <tr>
+          <td style="font-family:var(--font-mono);font-size:12px;color:var(--text-2)">${t.ts}</td>
+          <td style="font-family:var(--font-mono);font-size:12px">${t.card}</td>
+          <td style="font-weight:600">${t.amount}</td>
+          <td><span class="badge ${t.badgeClass}">${t.pattern}</span></td>
+          <td>
+            <div class="score-bar">
+              <div class="score-track">
+                <div class="score-fill" style="width:${barWidth}px;background:${barColor}"></div>
+              </div>
+              <span class="score-num">${scoreNum}</span>
+            </div>
+          </td>
+          <td><button class="action-btn" onclick="openReview(${i})">Review</button></td>
+        </tr>`;
+    }).join('');
+  }
+
+  /* ── OPEN SPECIFIC REVIEW ── */
+  function openReview(idx) {
+    curIdx = idx;
+    selectedAction = null;
+    goPage('action');
+    renderReview();
+  }
+
+  /* ── RENDER REVIEW ── */
+  function renderReview() {
+    const t = txData[curIdx];
+    document.getElementById('rev-id').textContent      = t.id + ' · ' + t.card;
+    document.getElementById('rev-amount').textContent  = t.amount;
+    const badge = document.getElementById('rev-badge');
+    badge.className = 'badge ' + t.badgeClass;
+    badge.textContent = t.pattern;
+    document.getElementById('rev-ts').textContent       = t.ts;
+    document.getElementById('rev-score').textContent    = t.score;
+    document.getElementById('rev-merchant').textContent = t.merchant;
+    document.getElementById('rev-loc').textContent      = t.loc;
+    document.getElementById('rev-reason').textContent   = t.reason;
+    document.getElementById('rev-msg').value = '';
+
+    selectedAction = null;
+    ['approve', 'reject', 'escalate'].forEach(a => {
+      document.getElementById('btn-' + a).className = 'action-opt';
+    });
+
+    const pct = Math.round(((curIdx + 1) / txData.length) * 100);
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('prog-label').textContent = 'Transaction ' + (curIdx + 1) + ' of ' + txData.length;
+    document.getElementById('prog-pct').textContent = pct + '%';
+    document.getElementById('btn-undo').disabled = curIdx === 0;
+  }
+
+  /* ── SELECT DECISION ── */
+  function selectAction(a) {
+    selectedAction = a;
+    ['approve', 'reject', 'escalate'].forEach(x => {
+      document.getElementById('btn-' + x).className = 'action-opt';
+    });
+    document.getElementById('btn-' + a).className = 'action-opt selected-' + a;
+  }
+
+  /* ── SUBMIT ── */
+  function submitAndNext() {
+    if (!selectedAction) {
+      showToast('⚠ Select approve, reject, or escalate first.');
+      return;
+    }
+    showToast('✓ ' + selectedAction.toUpperCase() + ' saved for ' + txData[curIdx].card);
+    if (curIdx < txData.length - 1) {
+      curIdx++;
+      renderReview();
+    } else {
+      showToast('✓ All transactions reviewed!');
+      setTimeout(() => goPage('dashboard'), 1600);
+    }
+  }
+
+  function nextTx() {
+    if (curIdx < txData.length - 1) { curIdx++; renderReview(); }
+  }
+  function prevTx() {
+    if (curIdx > 0) { curIdx--; renderReview(); }
+  }
+
+  /* ── FILE UPLOAD ── */
+  function handleFileUpload(input) {
+    if (input.files.length > 0) {
+      showToast('✓ File "' + input.files[0].name + '" uploaded for analysis.');
+    }
+  }
+
+  /* ── TOAST ── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  /* ── INIT ── */
+  renderQueue();
+  document.getElementById('nav-dashboard').classList.add('active');
+</script>
+</body>
+</html>
