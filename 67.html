@@ -292,10 +292,10 @@
     </div>
     <nav class="sidebar-nav">
       <a class="nav-item" onclick="goPage('dashboard')" id="nav-dashboard"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-      <a class="nav-item" onclick="goPage('cases')" id="nav-cases"><i class="ti ti-clipboard-list"></i> Cases</a>
+      <a class="nav-item" onclick="goPage('history')" id="nav-history"><i class="ti ti-clipboard-list"></i> History</a>
       <a class="nav-item" onclick="goPage('upload')" id="nav-upload"><i class="ti ti-file-upload"></i> Upload</a>
     </nav>
-    <button class="new-inv-btn" onclick="goPage('action')">+ New Investigation</button>
+    <button class="new-inv-btn" onclick="goPage('action')">Swipe and Review</button>
     <div class="sidebar-footer">
       <a class="nav-item"><i class="ti ti-settings"></i> Settings</a>
       <a class="nav-item"><i class="ti ti-help"></i> Support</a>
@@ -474,15 +474,15 @@
         </div>
       </div>
 
-      <!-- CASES -->
-      <div class="page" id="page-cases">
-        <div class="page-title">Cases</div>
+      <!-- HISTORY -->
+      <div class="page" id="page-history">
+        <div class="page-title">History</div>
         <div class="card">
           <table>
             <thead>
               <tr><th>Case ID</th><th>Card</th><th>Pattern</th><th>Status</th><th>Analyst</th><th>Updated</th></tr>
             </thead>
-            <tbody id="cases-body"></tbody>
+            <tbody id="history-body"></tbody>
           </table>
         </div>
       </div>
@@ -491,7 +491,7 @@
       <div class="page" id="page-upload">
         <div class="page-title">Document Analysis</div>
         <div style="margin-bottom:14px">
-          <button class="btn-outline" onclick="goPage('cases')"><i class="ti ti-file-text"></i> View previous transaction document</button>
+          <button class="btn-outline" onclick="goPage('history')"><i class="ti ti-file-text"></i> View previous transaction document</button>
         </div>
         <div class="card">
           <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
@@ -682,14 +682,14 @@ function calcSummaryStats() {
 function goPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const pageMap = { dashboard:'page-dashboard', cases:'page-cases', upload:'page-upload', action:'page-action' };
+  const pageMap = { dashboard:'page-dashboard', history:'page-history', upload:'page-upload', action:'page-action' };
   const pg = document.getElementById(pageMap[name]);
   if (pg) pg.classList.add('active');
   const nav = document.getElementById('nav-' + name);
   if (nav) nav.classList.add('active');
   if (name === 'action') { curIdx = 0; selectedAction = null; renderReview(); }
   if (name === 'dashboard') { applyFilter(); renderCases(); }
-  if (name === 'cases') renderCases();
+  if (name === 'history') renderCases();
   closeSearch();
 }
 
@@ -703,7 +703,7 @@ function renderCases() {
     if (s==='escalate')return '<span class="status-badge-escalated">Escalated</span>';
     return '';
   };
-  const tbody = document.getElementById('cases-body');
+  const tbody = document.getElementById('history-body');
   tbody.innerHTML = txData.map((t,i) => `
     <tr>
       <td style="font-family:var(--font-mono);font-size:12px">${t.id}</td>
